@@ -1,13 +1,12 @@
-const { test, expect } = require('@playwright/test');
-const { collectTrends } = require('../src/collectors/googleTrends/trendsCollector');
-const { saveToDatabase } = require('../src/storage/dataStorage');
+import { test, expect } from '@playwright/test';
+import { collectTrends } from '../src/collectors/googleTrends/trendsCollector.js';
+import { saveToDatabase } from '../src/storage/dataStorage.js';
 
 test('Test Google Trends Collector and Save Data', async ({}) => {
     console.log('Starting Google Trends collection...');
     
     try {
         const data = await collectTrends();
-        
         console.log('Execution finished successfully.');
         
         if (data && data.length > 0) {
@@ -18,7 +17,6 @@ test('Test Google Trends Collector and Save Data', async ({}) => {
         }
         
         expect(true).toBe(true);
-        
     } catch (error) {
         console.error('Test execution caught an error');
         expect(true).toBe(true);
