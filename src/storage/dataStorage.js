@@ -79,3 +79,5 @@ export function saveLog(
     } catch (error) {
         console.error('Log Error:', error.message);
         return false;
+    }
+}
