@@ -39,8 +39,10 @@ export async function collectTrends() {
                         "الرابط": "https://trends.google.com/trends/trendingsearches/daily?geo=US",
                         "اسم المصدر": source,
                         "تاريخ الجمع": new Date().toISOString()
-                    });
-                });
-                return dataList;
-            }, sourceName);
-        }
+                 }
+        await browser.close();
+        return trends;
+    } catch (error) {
+        return [];
+    }
+}
