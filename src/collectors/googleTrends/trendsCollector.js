@@ -8,7 +8,6 @@ export async function collectTrends() {
     let trends = [];
     
     try {
-        // المحاولة الأولى: استخدام المتصفح Playwright
         browser = await chromium.launch({ headless: true });
         const context = await browser.newContext({
             userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -33,8 +32,8 @@ export async function collectTrends() {
                         "اسم المنتج": title,
                         "النيش": "Trending Search",
                         "السعر": "N/A",
-                        "المدينة": "US",
-                        "الوصف": "Trending query with searches today.",
+                        "المدينة": "القاهرة ",
+                        "الوصف": "Trending query from Google.",
                         "الكلمات المفتاحية": [title],
                         "عدد التفاعلات": count,
                         "الرابط": "https://trends.google.com/trends/trendingsearches/daily?geo=US",
@@ -44,34 +43,4 @@ export async function collectTrends() {
                 });
                 return dataList;
             }, sourceName);
-        }
-        
-        await browser.close();
-
-        // المحاولة الثانية التلقائية: الـ RSS المفتوح في حال الحظر
-        if (trends.length === 0) {
-            console.log("Using fallback RSS Feed...");
-            const response = await fetch('https://trends.google.com/trending/rss?geo=US');
-            const text = await response.text();
-            
-            const matches = text.matchAll(/<title>([^<]+)<\/title>/g);
-            let count = 0;
-            for (const match of matches) {
-                const title = match[1];
-                if (title.includes("Daily Search Trends") || count >= 15) continue; 
-                
-                trends.push({
-                    "اسم المنتج": title,
-                    "النيش": "Trending Search (RSS)",
-                    "السعر": "N/A",
-                    "المدينة": "US",
-                    "الوصف": "Trending query detected via Google RSS Feed.",
-                    "الكلمات المفتاحية": [title],
-                    "عدد التفاعلات": "10K+",
-                    "الرابط": "https://trends.google.com/trends/trendingsearches/daily?geo=US",
-                    "اسم المصدر": sourceName,
-                    "تاريخ الجمع": new Date().toISOString()
-                });
-                count++;
-            }
         }
