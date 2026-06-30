@@ -80,4 +80,3 @@ export function saveLog(
         console.error('Log Error:', error.message);
         return false;
     }
-}
