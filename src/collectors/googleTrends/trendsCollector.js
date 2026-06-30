@@ -1,16 +1,39 @@
+import { launchBrowser } from '../../utils/browser.js';
+
 export async function collectGoogleTrends() {
-  return [
-    {
-      keyword: "Artificial Intelligence",
-      country: "US",
-      searches: "100K+",
-      collectedAt: new Date().toISOString()
-    },
-    {
-      keyword: "Electric Cars",
-      country: "US",
-      searches: "50K+",
-      collectedAt: new Date().toISOString()
+
+    const { browser, page } = await launchBrowser();
+
+    try {
+
+        await page.goto(
+            'https://trends.google.com/trending',
+            {
+                waitUntil: 'networkidle'
+            }
+        );
+
+        const title = await page.title();
+
+        const h1 = await page.locator('h1').first().textContent();
+
+        await browser.close();
+
+        return {
+            success: true,
+            title,
+            heading: h1
+        };
+
+    } catch (error) {
+
+        await browser.close();
+
+        return {
+            success: false,
+            error: error.message
+        };
+
     }
-  ];
+
 }
