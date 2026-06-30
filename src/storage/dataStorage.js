@@ -1,51 +1,62 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
-// دالة لحفظ البيانات بصيغة JSON
-function saveToDatabase(sourceName, data) {
+const dbPath = path.resolve('database/data.json');
+const logPath = path.resolve('database/log.json');
+
+export function saveToDatabase(tableName, data) {
     try {
-        const dirPath = path.join(__dirname, '../../database');
-        if (!fs.existsSync(dirPath)) {
-            fs.mkdirSync(dirPath, { recursive: true });
+        if (!fs.existsSync(path.dirname(dbPath))) {
+            fs.mkdirSync(path.dirname(dbPath), { recursive: true });
         }
-        const filePath = path.join(dirPath, ${sourceName}_data.json);
-        fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+        
+        let currentData = {};
+        if (fs.existsSync(dbPath)) {
+            const fileContent = fs.readFileSync(dbPath, 'utf8');
+            currentData = fileContent ? JSON.parse(fileContent) : {};
+        }
+        
+        if (!currentData[tableName]) {
+            currentData[tableName] = [];
+        }
+        
+        currentData[tableName] = [...currentData[tableName], ...data];
+        fs.writeFileSync(dbPath, JSON.stringify(currentData, null, 2), 'utf8');
         return true;
     } catch (error) {
-        saveLog(sourceName, new Date(), new Date(), 0, error.message);
+        console.error('Error saving to database:', error.message);
         return false;
     }
 }
 
-// دالة تسجيل الـ Logs
-function saveLog(sourceName, startTime, endTime, recordCount, errorMessage = '') {
+export function saveLog(sourceName, startTime, endTime, recordsCount, errorMessage = null) {
     try {
-        const dirPath = path.join(__dirname, '../../database');
-        if (!fs.existsSync(dirPath)) {
-            fs.mkdirSync(dirPath, { recursive: true });
+        if (!fs.existsSync(path.dirname(logPath))) {
+            fs.mkdirSync(path.dirname(logPath), { recursive: true });
         }
-        const filePath = path.join(dirPath, 'execution_logs.json');
         
         let logs = [];
-        if (fs.existsSync(filePath)) {
-            const fileContent = fs.readFileSync(filePath, 'utf-8');
-            logs = JSON.parse(fileContent || '[]');
+        if (fs.existsSync(logPath)) {
+            const fileContent = fs.readFileSync(logPath, 'utf8');
+            logs = fileContent ? JSON.parse(fileContent) : [];
         }
-
+        
         const newLog = {
-            sourceName,
-            startTime: startTime.toISOString(),
-            endTime: endTime.toISOString(),
-            recordCount,
+            id: logs.length + 1,
+            source: sourceName,
+            start_time: startTime.toISOString(),
+            end_time: endTime.toISOString(),
+            duration_seconds: Math.round((endTime - startTime) / 1000),
+            records_collected: recordsCount,
             status: errorMessage ? 'Failed' : 'Success',
-            errorMessage
+            error: errorMessage
         };
-
+        
         logs.push(newLog);
-        fs.writeFileSync(filePath, JSON.stringify(logs, null, 2), 'utf-8');
+        fs.writeFileSync(logPath, JSON.stringify(logs, null, 2), 'utf8');
+        return true;
     } catch (error) {
-        console.error('Failed to write log:', error.message);
+        console.error('Error saving log:', error.message);
+        return false;
     }
 }
-
-module.exports = { saveToDatabase, saveLog }
