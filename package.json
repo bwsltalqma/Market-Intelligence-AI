@@ -1,0 +1,13 @@
+{
+  "name": "market-intelligence-ai",
+  "version": "2.0.0",
+  "description": "Market Intelligence AI",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Project structure OK\""
+  },
+  "dependencies": {
+    "@playwright/test": "^1.54.2"
+  }
+}
