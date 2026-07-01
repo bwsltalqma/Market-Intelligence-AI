@@ -1,4 +1,7 @@
 import { launchBrowser, closeBrowser } from "../../utils/browser.js";
+import { parseGoogleTrends } from "./parser.js";
+import { saveData } from "../../storage/saveData.js";
+import { saveLog } from "../../storage/saveLog.js";
 
 export async function collectGoogleTrends() {
   const { browser, page } = await launchBrowser();
@@ -10,11 +13,35 @@ export async function collectGoogleTrends() {
 
     console.log("Google Trends loaded successfully.");
 
-    return [];
+    // سيتم استبدال هذا لاحقًا بالبيانات الحقيقية
+    const rawData = [];
+
+    const parsedData = parseGoogleTrends(rawData);
+
+    saveData("GoogleTrends", parsedData);
+
+    saveLog(
+      "GoogleTrends",
+      "SUCCESS",
+      parsedData.length
+    );
+
+    return parsedData;
+
   } catch (error) {
-    console.error("Google Trends Collector Error:", error);
+
+    saveLog(
+      "GoogleTrends",
+      "FAILED",
+      0,
+      error.message
+    );
+
     throw error;
+
   } finally {
+
     await closeBrowser(browser);
+
   }
 }
