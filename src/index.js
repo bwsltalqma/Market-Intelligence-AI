@@ -1,1 +1,3 @@
-console.log("Market Intelligence AI Started");
+import { startApp } from "./app.js";
+
+startApp().catch(console.error);
