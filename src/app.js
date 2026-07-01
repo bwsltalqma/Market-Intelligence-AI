@@ -1,9 +1,13 @@
-import { collectGoogleTrends } from "./collectors/googleTrends/collector.js";
+import { dailyMonitor } from "./scheduler/dailyMonitor.js";
 
 export async function startApp() {
-  console.log("Market Intelligence AI Started");
+  console.log("=================================");
+  console.log("Market Intelligence AI v2.0");
+  console.log("=================================");
 
-  await collectGoogleTrends();
+  const report = await dailyMonitor();
 
-  console.log("Market Intelligence AI Finished");
+  console.log(report);
+
+  console.log("System Finished Successfully.");
 }
